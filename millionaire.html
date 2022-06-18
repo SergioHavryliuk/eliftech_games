@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Game Millionaire </title>
+</head>
+<body>
+
+<h1> Game Millionaire </h1>
+<p> powered by Serhii Havryliuk </p>
+
+<script>
+    // users variables
+    let myRange = 5; // choose a number in range [0; myRange]
+    let myPrize_1 = 10; // amount prize first
+    let myPrize_2 = 5; // amount prize second
+    let myPrize_3 = 2; // amount prize third
+    let myMultiplierForAmount = 3; // amount multiplier
+    let myMultiplierRForRange = 2; // multiplier for range
+
+    // function for fist init variables and start game
+    function gameInut() {
+        let previousPrize = 0;
+        let textQuestionConfirm = "Do you want to play game? (Start game)";
+
+        // start game process
+        startGame(myRange, myPrize_1, myPrize_2, myPrize_3, previousPrize, textQuestionConfirm);
+    }
+
+    // function for create game
+    function startGame(range, prize_1, prize_2, prize_3, previousPrize, textQuestionConfirm) {
+        this.range = range;
+        this.prize_1 = prize_1;
+        this.prize_2 = prize_2;
+        this.prize_3 = prize_3;
+        this.previousPrize = previousPrize;
+        this.textQuestionConfirm = textQuestionConfirm;
+
+        // Start game
+        if (resultConfirm(this.textQuestionConfirm)) {
+            let isWin = false;
+            let winPrize = 0;
+            let textQuestionInConfirm = 'Do you want to play game again?';
+            for (let i = 3; i >= 1; i--) {
+                let curentPrize = '';
+                // кол-во попыток (под каждую попытку менем кол-во денег)
+                switch (i) {
+                    case 3:
+                        curentPrize = this.prize_1;
+                        break;
+                    case 2:
+                        curentPrize = this.prize_2;
+                        break;
+                    case 1:
+                        curentPrize = this.prize_3;
+                        break;
+                }
+                let textInPromt = `Enter a number from 0 to ${this.range}
+                                   Attempts left: ${i}
+                                   Total price: ${curentPrize} $
+                                   Possible prize on current attempt: ${curentPrize + this.previousPrize} $`;
+                let randomNum = generateRandomNumber(this.range);
+                let userAnswer = parseInt(resultPromt(textInPromt));
+
+                // срвниваем число пользователя и сгенерированное число
+                if (randomNum === userAnswer) {
+                    isWin = true;
+                    winPrize = curentPrize + this.previousPrize;
+                    break;
+                } else {
+                    isWin = false;
+                }
+
+                // console.log("randomNum --> ", randomNum);
+                // console.log("userAnswer --> ", userAnswer);
+            }
+            // console.log("------------------- Закончился этап игры!!! -------------------");
+            // Если была победа меняем входные параметры
+            if (isWin) {
+                // console.log("Угадал число!!!");
+                textQuestionInConfirm = `
+                     You won!
+                     Your prize:${winPrize} $
+                     Do you want to play game again?
+                     `;
+                // обновляем приза для нового єтапа игрі
+                this.previousPrize = winPrize;
+
+                this.range *= myMultiplierRForRange;
+                this.prize_1 *= myMultiplierForAmount;
+                this.prize_2 = Math.floor(this.prize_1 / 2);
+                this.prize_3 = Math.floor(this.prize_2 / 2);
+            } else {
+                // нужно все обнулить после 3 попыток
+                this.range = myRange;
+                this.prize_1 = myPrize_1;
+                this.prize_2 = myPrize_2;
+                this.prize_3 = myPrize_3;
+                this.previousPrize = 0;
+                textQuestionInConfirm = `
+                     You lose!
+                     Your prize: ${this.previousPrize} $
+                     Do you want to play game again?
+                     `;
+            }
+
+            // перезагрузка матрицы =)
+            startGame(this.range, this.prize_1, this.prize_2, this.prize_3, this.previousPrize, textQuestionInConfirm);
+
+        } else {
+            console.log("You did not become a millionaire!")
+        }
+    }
+
+    // function for show confirm window and return user entered answer (ok/cancel)
+    function resultConfirm(text) {
+        return confirm(text)
+    }
+
+    // function for show prompt window and return user entered answer (number)
+    function resultPromt(text) {
+        return prompt(text)
+    }
+
+    // function for generation random number
+    function generateRandomNumber(maxNumber) {
+        return Math.floor(Math.random() * (maxNumber + 1));
+    }
+
+    // Start game
+    gameInut();
+</script>
+</body>
+</html>
